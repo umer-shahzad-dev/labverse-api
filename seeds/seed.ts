@@ -3,7 +3,7 @@ import { AppDataSource } from '../src/config/data-source';
 import { Role } from '../src/modules/roles/entities/role.entity';
 import { User } from '../src/modules/users/entities/user.entity';
 import * as bcrypt from 'bcryptjs';
-import { RoleEnum } from 'src/modules/roles/role.enum';
+import { RoleEnum } from '../src/modules/roles/role.enum';
 
 async function seed() {
   await AppDataSource.initialize();
