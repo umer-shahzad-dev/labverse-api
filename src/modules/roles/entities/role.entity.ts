@@ -5,9 +5,12 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  ManyToMany,
+  JoinTable, 
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { RoleEnum } from '../role.enum';
+import { Permission } from '../../permissions/entities/permission.entity';
 
 @Entity({ name: 'roles' })
 export class Role {
@@ -19,6 +22,14 @@ export class Role {
 
   @Column({ nullable: true })
   description: string;
+
+  @ManyToMany(() => Permission, { cascade: true, eager: true })
+  @JoinTable({
+    name: 'role_permissions',
+    joinColumn: { name: 'role_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'permission_id', referencedColumnName: 'id' },
+  })
+  permissions: Permission[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

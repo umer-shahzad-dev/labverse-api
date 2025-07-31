@@ -1,4 +1,4 @@
-import { IsString, IsOptional, MaxLength, IsEnum } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, MaxLength, IsEnum, IsUUID, IsArray } from 'class-validator';
 import { RoleEnum } from '../role.enum';
 
 export class CreateRoleDto {
@@ -9,4 +9,9 @@ export class CreateRoleDto {
   @IsString()
   @MaxLength(255)
   description?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsUUID('4', { each: true })
+  permissionIds?: string[];
 }

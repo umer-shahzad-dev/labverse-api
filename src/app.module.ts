@@ -1,15 +1,31 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-
 import { UsersModule } from './modules/users/users.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { PermissionsModule } from './modules/permissions/permissions.module';
+import { SkillsModule } from './modules/skills/skills.module';
+import { EmployeeProfilesModule } from './modules/employee-profiles/employee-profiles.module';
+import { ProjectsModule } from './modules/projects/projects.module';
+import { ProjectMembersModule } from './modules/project-members/project-members.module';
+import { TechnologiesModule } from './modules/technologies/technologies.module';
+import { ProjectTechnologiesModule } from './modules/project-technologies/project-technologies.module';
+import { ProjectClientsModule } from './modules/project-clients/project-clients.module';
+import { ProjectMilestonesModule } from './modules/project-milestones/project-milestones.module';
+import { ProjectUpdatesModule } from './modules/project-updates/project-updates.module';
+import { ClientProjectsModule } from './modules/client-projects/client-projects.module';
+import { TasksModule } from './modules/tasks/tasks.module';
+import { TimeEntriesModule } from './modules/time-entries/time-entries.module';
+import { ServicesModule } from './modules/services/services.module';
+import { DevelopmentPlansModule } from './modules/development-plans/development-plans.module';
+import { PlanFeaturesModule } from './modules/plan-features/plan-features.module';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 import databaseConfig from './config/database.config';
+import { serialize } from 'v8';
 
 @Module({
   imports: [
@@ -22,8 +38,24 @@ import databaseConfig from './config/database.config';
     UsersModule,
     RolesModule,
     AuthModule,
+    PermissionsModule,
+    SkillsModule,
+    EmployeeProfilesModule,
+    ProjectsModule,
+    ProjectMembersModule,
+    TechnologiesModule,
+    ProjectTechnologiesModule,
+    ProjectClientsModule,
+    ProjectMilestonesModule,
+    ProjectUpdatesModule,
+    ClientProjectsModule,
+    TasksModule,
+    TimeEntriesModule,
+    ServicesModule,
+    DevelopmentPlansModule,
+    PlanFeaturesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

@@ -10,48 +10,64 @@ import { RegisterDto } from './dto/register.dto';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { User } from '../users/entities/user.entity';
+import { Role } from '../roles/entities/role.entity'; // 👈 Import Role
+import { InjectRepository } from '@nestjs/typeorm'; // 👈 Import InjectRepository
+import { Repository } from 'typeorm';
+import { RoleEnum } from '../roles/role.enum';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    @InjectRepository(Role) private rolesRepository: Repository<Role>, // 👈 Inject Role Repository
   ) {}
 
   async register(dto: RegisterDto): Promise<User> {
     const existing = await this.usersService.findByEmail(dto.email);
     if (existing) throw new ConflictException('Email already registered.');
 
+    const defaultRole = await this.rolesRepository.findOne({
+      where: { name: RoleEnum.USER },
+    });
+    if (!defaultRole) {
+      throw new Error('Default user role not found. Please run the seeder.');
+    }
+
     const hashedPassword = await bcrypt.hash(dto.password, 10);
     const user = await this.usersService.create({
       ...dto,
       password: hashedPassword,
+      roleId: defaultRole.id, // 👈 Assign the default user role
     });
     return user;
   }
 
-  async validateUser(email: string, password: string): Promise<User> {
-    const user = await this.usersService.findByEmail(email, {
-      includePassword: true,
-    });
-    if (user && (await bcrypt.compare(password, user.password))) {
-      return user;
-    }
-    return null;
+  // ... existing code ...
+async validateUser(email: string, password: string): Promise<User> {
+  const user = await this.usersService.findByEmail(email, {
+    includePassword: true,
+    includeRoleAndPermissions: true, // 👈 New option here
+  });
+  if (user && (await bcrypt.compare(password, user.password))) {
+    return user;
   }
+  return null;
+}
 
-  async login(dto: AuthCredentialsDto): Promise<LoginResponseDto> {
-    const user = await this.usersService.findByEmail(dto.email, {
-      includePassword: true,
-    });
-    if (!user) throw new UnauthorizedException('Invalid credentials.');
+async login(dto: AuthCredentialsDto): Promise<LoginResponseDto> {
+  const user = await this.usersService.findByEmail(dto.email, {
+    includePassword: true,
+    includeRoleAndPermissions: true, // 👈 New option here
+  });
+  if (!user) throw new UnauthorizedException('Invalid credentials.');
 
-    const isMatch = await bcrypt.compare(dto.password, user.password);
-    if (!isMatch) throw new UnauthorizedException('Invalid credentials.');
+  const isMatch = await bcrypt.compare(dto.password, user.password);
+  if (!isMatch) throw new UnauthorizedException('Invalid credentials.');
 
-    const { password: _, ...userSafe } = user;
-    const payload = { sub: user.id, email: user.email };
-    const accessToken = await this.jwtService.signAsync(payload);
-    return { accessToken, user: userSafe };
-  }
+  const { password: _, ...userSafe } = user;
+  const payload = { sub: user.id, email: user.email };
+  const accessToken = await this.jwtService.signAsync(payload);
+  return { accessToken, user: userSafe };
+}
 }

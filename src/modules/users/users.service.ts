@@ -28,20 +28,29 @@ export class UsersService {
   }
 
   async findAll(): Promise<User[]> {
-    return this.userRepository.find({ relations: ['role'] });
+    // We should load permissions here as well for consistency
+    return this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.role', 'role')
+      .leftJoinAndSelect('role.permissions', 'permissions')
+      .getMany();
   }
 
   async findOne(id: string): Promise<User> {
-    const user = await this.userRepository.findOne({
-      where: { id },
-      relations: ['role'],
-    });
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.id = :id', { id })
+      .leftJoinAndSelect('user.role', 'role')
+      .leftJoinAndSelect('role.permissions', 'permissions')
+      .getOne();
+
     if (!user) throw new NotFoundException('User not found');
     return user;
   }
 
   async update(id: string, dto: UpdateUserDto): Promise<User> {
     const user = await this.findOne(id);
+    if (!user) throw new NotFoundException('User not found');
 
     if (dto.roleId) {
       const role = await this.roleRepository.findOne({
@@ -58,16 +67,24 @@ export class UsersService {
     await this.userRepository.delete(id);
   }
 
+  // 👇 CORRECTED METHOD
   async findByEmail(
     email: string,
-    opts: { includePassword?: boolean } = {},
+    opts: { includePassword?: boolean; includeRoleAndPermissions?: boolean } = {},
   ): Promise<User | undefined> {
-    return this.userRepository.findOne({
-      where: { email },
-      select: opts.includePassword
-        ? ['id', 'email', 'password', 'fullName', 'createdAt', 'updatedAt']
-        : undefined,
-      relations: ['role'],
-    });
+    const queryBuilder = this.userRepository
+      .createQueryBuilder('user')
+      .where('user.email = :email', { email });
+
+    if (opts.includePassword) {
+      queryBuilder.addSelect('user.password');
+    }
+
+    if (opts.includeRoleAndPermissions) {
+      queryBuilder.leftJoinAndSelect('user.role', 'role');
+      queryBuilder.leftJoinAndSelect('role.permissions', 'permissions');
+    }
+
+    return queryBuilder.getOne();
   }
 }

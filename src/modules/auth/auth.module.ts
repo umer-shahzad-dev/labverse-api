@@ -7,6 +7,9 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { UsersModule } from '../users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm'; 
+import { Role } from '../roles/entities/role.entity';
+import { PermissionsGuard } from 'src/common/guards/permissions.guard';
 
 @Module({
   imports: [
@@ -20,10 +23,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         signOptions: { expiresIn: '7d' },
       }),
     }),
-    ConfigModule,
+    TypeOrmModule.forFeature([Role]), // 👈 Add Role entity to AuthModule
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, JwtAuthGuard],
+  providers: [AuthService, JwtStrategy, JwtAuthGuard, PermissionsGuard],
   exports: [AuthService],
 })
 export class AuthModule {}
