@@ -19,6 +19,7 @@ import { Task } from '../../tasks/entities/task.entity';
 import { TaskComment } from '../../tasks/entities/task-comment.entity';
 import { TimeEntry } from '../../time-entries/entities/time-entry.entity';
 import { ClientPlanQuotation } from '../../client-plan-quotations/entities/client-plan-quotation.entity';
+import { Invoice } from '../../invoices/entities/invoice.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -71,9 +72,12 @@ export class User {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @OneToMany(() => TimeEntry, (timeEntry) => timeEntry.user) 
+  @OneToMany(() => TimeEntry, (timeEntry) => timeEntry.user)
   timeEntries: TimeEntry[];
 
   @OneToMany(() => ClientPlanQuotation, (quote) => quote.client)
   clientQuotations: ClientPlanQuotation[];
+
+  @OneToMany(() => Invoice, (invoice) => invoice.client)
+  invoices: Invoice[];
 }

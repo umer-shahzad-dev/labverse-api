@@ -122,6 +122,18 @@ async function seed() {
       { name: 'delete_client_plan_quotation', description: 'Allows deleting client plan quotations' },
       { name: 'update_client_plan_quotation_status', description: 'Allows updating the status of client plan quotations' }, // Specific status permission
 
+      { name: 'create_invoice', description: 'Allows creating new invoices' },
+      { name: 'read_invoice', description: 'Allows reading invoice details' },
+      { name: 'update_invoice', description: 'Allows updating existing invoices (including items)' },
+      { name: 'delete_invoice', description: 'Allows deleting invoices' },
+      { name: 'update_invoice_payment_status', description: 'Allows updating the payment status of invoices' },
+
+      { name: 'create_payment', description: 'Allows creating new payments' },
+      { name: 'read_payment', description: 'Allows reading payment details' },
+      { name: 'update_payment', description: 'Allows updating existing payments' },
+      { name: 'delete_payment', description: 'Allows deleting payments' },
+
+
     ];
 
     const seededPermissions: { [key: string]: Permission } = {};

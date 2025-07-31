@@ -6,9 +6,11 @@ import {
     JoinColumn,
     CreateDateColumn,
     UpdateDateColumn,
+    OneToMany
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { DevelopmentPlan } from '../../development-plans/entities/development-plan.entity';
+import { Invoice } from '../../invoices/entities/invoice.entity';
 
 export enum QuotationStatus {
     DRAFT = 'Draft',
@@ -63,4 +65,7 @@ export class ClientPlanQuotation {
     @ManyToOne(() => DevelopmentPlan, (plan) => plan.clientQuotations, { onDelete: 'RESTRICT' })
     @JoinColumn({ name: 'development_plan_id' })
     developmentPlan: DevelopmentPlan;
+
+    @OneToMany(() => Invoice, (invoice) => invoice.quotation)
+    invoices: Invoice[];
 }
