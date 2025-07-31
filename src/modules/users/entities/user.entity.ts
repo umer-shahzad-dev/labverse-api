@@ -18,6 +18,7 @@ import { ProjectUpdate } from '../../project-updates/entities/project-update.ent
 import { Task } from '../../tasks/entities/task.entity';
 import { TaskComment } from '../../tasks/entities/task-comment.entity';
 import { TimeEntry } from '../../time-entries/entities/time-entry.entity';
+import { ClientPlanQuotation } from '../../client-plan-quotations/entities/client-plan-quotation.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -72,4 +73,7 @@ export class User {
 
   @OneToMany(() => TimeEntry, (timeEntry) => timeEntry.user) 
   timeEntries: TimeEntry[];
+
+  @OneToMany(() => ClientPlanQuotation, (quote) => quote.client)
+  clientQuotations: ClientPlanQuotation[];
 }

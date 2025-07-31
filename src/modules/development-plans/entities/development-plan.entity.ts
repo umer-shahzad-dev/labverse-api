@@ -5,7 +5,7 @@ import {
 import { DevelopmentPlanFeature } from './development-plan-feature.entity'; 
 import { DevelopmentPlanService } from './development-plan-service.entity'; 
 import { DevelopmentPlanTechnology } from './development-plan-technology.entity'; 
-// import { ClientPlanQuotation } from '../../client-plan-quotations/entities/client-plan-quotation.entity'; // Will create later
+import { ClientPlanQuotation } from '../../client-plan-quotations/entities/client-plan-quotation.entity';
 
 @Entity('development_plans')
 export class DevelopmentPlan {
@@ -41,7 +41,6 @@ export class DevelopmentPlan {
     @OneToMany(() => DevelopmentPlanTechnology, (dpt) => dpt.developmentPlan)
     planTechnologies: DevelopmentPlanTechnology[];
 
-    // // --- Relationship to ClientPlanQuotation (One-to-Many) ---
-    // @OneToMany(() => ClientPlanQuotation, (quote) => quote.developmentPlan)
-    // clientQuotations: ClientPlanQuotation[]; // Quotations based on this plan
+    @OneToMany(() => ClientPlanQuotation, (quote) => quote.developmentPlan)
+    clientQuotations: ClientPlanQuotation[]; 
 }

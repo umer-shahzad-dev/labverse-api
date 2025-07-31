@@ -20,6 +20,7 @@ import { TimeEntriesModule } from './modules/time-entries/time-entries.module';
 import { ServicesModule } from './modules/services/services.module';
 import { DevelopmentPlansModule } from './modules/development-plans/development-plans.module';
 import { PlanFeaturesModule } from './modules/plan-features/plan-features.module';
+import { ClientPlanQuotationsModule } from './modules/client-plan-quotations/client-plan-quotations.module';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -54,6 +55,7 @@ import { serialize } from 'v8';
     ServicesModule,
     DevelopmentPlansModule,
     PlanFeaturesModule,
+    ClientPlanQuotationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

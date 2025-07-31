@@ -116,6 +116,12 @@ async function seed() {
       { name: 'update_development_plan_technology', description: 'Allows updating development plan technology associations' },
       { name: 'delete_development_plan_technology', description: 'Allows deleting development plan technology associations' },
 
+      { name: 'create_client_plan_quotation', description: 'Allows creating new client plan quotations' },
+      { name: 'read_client_plan_quotation', description: 'Allows reading client plan quotation details' },
+      { name: 'update_client_plan_quotation', description: 'Allows updating existing client plan quotations' },
+      { name: 'delete_client_plan_quotation', description: 'Allows deleting client plan quotations' },
+      { name: 'update_client_plan_quotation_status', description: 'Allows updating the status of client plan quotations' }, // Specific status permission
+
     ];
 
     const seededPermissions: { [key: string]: Permission } = {};
