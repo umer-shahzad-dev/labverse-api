@@ -18,11 +18,9 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../common/guards/permissions.guard';
 import { Permissions } from '../../common/decorators/permissions.decorator';
 import { Request } from 'express'; // Standard Express Request type
-import { User } from '../users/entities/user.entity'; // For req.user type hint
-
-interface RequestWithUser extends Request {
-    user: User; // Assuming req.user is populated by JwtAuthGuard
-}
+// Removed import of User and the custom interface.
+// import { User } from '../users/entities/user.entity'; // For req.user type hint
+// interface RequestWithUser extends Request { ... }
 
 @Controller('time-entries')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
@@ -32,12 +30,9 @@ export class TimeEntriesController {
     @Post()
     @HttpCode(HttpStatus.CREATED)
     @Permissions('create_time_entry')
-    create(@Body() createTimeEntryDto: CreateTimeEntryDto, @Req() req: RequestWithUser) {
-        // Optionally override userId from token to ensure user logs their own time,
-        // or allow admin to log time for others based on specific permission.
-        // For now, let's assume `userId` in DTO is the user whose time is being logged.
-        // If you want to force logging for the authenticated user:
-        // createTimeEntryDto.userId = req.user.id;
+    create(@Body() createTimeEntryDto: CreateTimeEntryDto, @Req() req: Request) {
+        // req.user is now correctly typed as JwtPayload thanks to the global declaration
+        // const userIdFromToken = req.user.id;
         return this.timeEntriesService.create(createTimeEntryDto);
     }
 
@@ -72,7 +67,7 @@ export class TimeEntriesController {
     getTimeEntriesByProject(@Param('projectId') projectId: string) {
         return this.timeEntriesService.findTimeEntriesByProject(projectId);
     }
-
+    
     @Get('by-user/:userId')
     @Permissions('read_time_entry_report') // New permission for reports
     getTimeEntriesByUser(@Param('userId') userId: string) {

@@ -23,6 +23,9 @@ import { PlanFeaturesModule } from './modules/plan-features/plan-features.module
 import { ClientPlanQuotationsModule } from './modules/client-plan-quotations/client-plan-quotations.module';
 import { InvoicesModule } from './modules/invoices/invoices.module';
 import { PaymentsModule } from './modules/payments/payments.module';
+import { ConversationsModule } from './modules/conversations/conversations.module';
+import { MessagesModule } from './modules/messages/messages.module';
+import { SupportTicketsModule } from './modules/support-tickets/support-tickets.module';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -59,7 +62,10 @@ import { serialize } from 'v8';
     PlanFeaturesModule,
     ClientPlanQuotationsModule,
     InvoicesModule,
-    PaymentsModule, 
+    PaymentsModule,
+    ConversationsModule,
+    MessagesModule,
+    SupportTicketsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

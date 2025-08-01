@@ -20,6 +20,10 @@ import { TaskComment } from '../../tasks/entities/task-comment.entity';
 import { TimeEntry } from '../../time-entries/entities/time-entry.entity';
 import { ClientPlanQuotation } from '../../client-plan-quotations/entities/client-plan-quotation.entity';
 import { Invoice } from '../../invoices/entities/invoice.entity';
+import { ConversationParticipant } from '../../conversations/entities/conversation-participant.entity';
+import { Message } from '../../messages/entities/message.entity';
+import { SupportTicket } from '../../support-tickets/entities/support-ticket.entity';
+import { TicketComment } from '../../support-tickets/entities/ticket-comment.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -80,4 +84,19 @@ export class User {
 
   @OneToMany(() => Invoice, (invoice) => invoice.client)
   invoices: Invoice[];
+
+  @OneToMany(() => ConversationParticipant, (participant) => participant.user)
+  conversationParticipants: ConversationParticipant[];
+
+  @OneToMany(() => Message, (message) => message.sender)
+  messages: Message[];
+
+  @OneToMany(() => SupportTicket, ticket => ticket.reporter)
+  reportedTickets: SupportTicket[];
+
+  @OneToMany(() => SupportTicket, ticket => ticket.assignedTo)
+  assignedTickets: SupportTicket[];
+
+  @OneToMany(() => TicketComment, comment => comment.author)
+  ticketComments: TicketComment[];
 }
