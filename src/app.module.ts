@@ -31,6 +31,8 @@ import { BlogPostsModule } from './modules/blog-posts/blog-posts.module';
 import { LeadsModule } from './modules/leads/leads.module';
 import { ClientNote } from './modules/client-notes/entities/client-note.entity';
 import { ClientInteractionsModule } from './modules/client-interactions/client-interactions.module';
+import { QuestionsModule } from './modules/questions/questions.module'; 
+import { AnswersModule } from './modules/answers/answers.module'; 
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -77,6 +79,8 @@ import { Lead } from './modules/leads/entities/lead.entity';
     LeadsModule,
     ClientNote,
     ClientInteractionsModule,
+    QuestionsModule,
+    AnswersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

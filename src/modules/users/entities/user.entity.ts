@@ -29,6 +29,8 @@ import { Comment } from '../../blog-posts/entities/comment.entity';
 import { Lead } from '../../leads/entities/lead.entity';
 import { ClientNote } from '../../client-notes/entities/client-note.entity';
 import { ClientInteraction } from '../../client-interactions/entities/client-interaction.entity';
+import { Question } from '../../questions/entities/question.entity'; 
+import { Answer } from '../../answers/entities/answer.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -126,4 +128,11 @@ export class User {
 
   @OneToMany(() => ClientInteraction, (interaction) => interaction.interactedWith)
   clientInteractions: ClientInteraction[];
+
+  @OneToMany(() => Question, (question) => question.author)
+  questions: Question[];
+
+  @OneToMany(() => Answer, (answer) => answer.author)
+  answers: Answer[];
+
 }
