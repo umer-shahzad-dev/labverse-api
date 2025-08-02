@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 
 import { BlogPost } from '../../blog-posts/entities/blog-post.entity';
+import { CaseStudy } from '../../case-studies/entities/case-study.entity';
 
 @Entity('categories')
 export class Category {
@@ -31,4 +32,7 @@ export class Category {
 
     @OneToMany(() => BlogPost, (blogPost) => blogPost.category)
     blogPosts: BlogPost[];
+
+    @OneToMany(() => CaseStudy, (caseStudy) => caseStudy.category)
+    caseStudies: CaseStudy[];
 }

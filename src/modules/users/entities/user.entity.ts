@@ -29,8 +29,10 @@ import { Comment } from '../../blog-posts/entities/comment.entity';
 import { Lead } from '../../leads/entities/lead.entity';
 import { ClientNote } from '../../client-notes/entities/client-note.entity';
 import { ClientInteraction } from '../../client-interactions/entities/client-interaction.entity';
-import { Question } from '../../questions/entities/question.entity'; 
+import { Question } from '../../questions/entities/question.entity';
 import { Answer } from '../../answers/entities/answer.entity';
+import { CaseStudy } from '../../case-studies/entities/case-study.entity';
+import { Testimonial } from '../../testimonials/entities/testimonial.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -135,4 +137,9 @@ export class User {
   @OneToMany(() => Answer, (answer) => answer.author)
   answers: Answer[];
 
+  @OneToMany(() => CaseStudy, (caseStudy) => caseStudy.author)
+  caseStudies: CaseStudy[];
+
+  @OneToMany(() => Testimonial, (testimonial) => testimonial.createdBy)
+  testimonials: Testimonial[];
 }

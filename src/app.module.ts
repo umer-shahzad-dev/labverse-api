@@ -33,7 +33,9 @@ import { ClientNote } from './modules/client-notes/entities/client-note.entity';
 import { ClientInteractionsModule } from './modules/client-interactions/client-interactions.module';
 import { QuestionsModule } from './modules/questions/questions.module'; 
 import { AnswersModule } from './modules/answers/answers.module'; 
-
+import { CaseStudiesModule } from './modules/case-studies/case-studies.module';
+import { TestimonialsModule } from './modules/testimonials/testimonials.module';
+import { ContactInquiriesModule } from './modules/contact-inquiries/contact-inquiries.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -81,6 +83,9 @@ import { Lead } from './modules/leads/entities/lead.entity';
     ClientInteractionsModule,
     QuestionsModule,
     AnswersModule,
+    CaseStudiesModule,
+    TestimonialsModule,
+    ContactInquiriesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

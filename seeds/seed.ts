@@ -19,6 +19,7 @@ import { ProjectMilestone } from '../src/modules/project-milestones/entities/pro
 import { ProjectUpdate } from '../src/modules/project-updates/entities/project-update.entity';
 import { ProjectStatus } from '../src/modules/projects/entities/project.entity';
 import { PermissionNames } from '../src/modules/permissions/enums/permission-names.enum';
+
 // --- NEW MILESTONE 7 ENTITY IMPORTS ---
 import { Lead } from '../src/modules/leads/entities/lead.entity';
 import { Category } from '../src/modules/categories/entities/category.entity';
@@ -26,6 +27,11 @@ import { BlogPost } from '../src/modules/blog-posts/entities/blog-post.entity';
 import { Comment } from '../src/modules/blog-posts/entities/comment.entity';
 import { ClientNote } from '../src/modules/client-notes/entities/client-note.entity';
 import { ClientInteraction } from '../src/modules/client-interactions/entities/client-interaction.entity';
+import { Question } from '../src/modules/questions/entities/question.entity'; // <-- New import
+import { Answer } from '../src/modules/answers/entities/answer.entity'; // <-- New import
+import { CaseStudy } from '../src/modules/case-studies/entities/case-study.entity'; // <-- New import
+import { Testimonial } from '../src/modules/testimonials/entities/testimonial.entity'; // <-- New import
+import { ContactInquiry } from '../src/modules/contact-inquiries/entities/contact-inquiry.entity'; // <-- New import
 // --- END NEW MILESTONE 7 ENTITY IMPORTS ---
 
 // Import your database config
@@ -72,6 +78,11 @@ async function seed() {
       { name: 'manage_leads', description: 'Allows full CRUD for leads in the CRM.' },
       { name: 'manage_client_notes', description: 'Allows full CRUD for client notes in the CRM.' },
       { name: 'manage_client_interactions', description: 'Allows full CRUD for client interactions in the CRM.' },
+      { name: 'manage_questions', description: 'Allows full CRUD for Q&A questions.' },
+      { name: 'manage_answers', description: 'Allows full CRUD for Q&A answers.' },
+      { name: 'manage_case_studies', description: 'Allows full CRUD for case studies.' },
+      { name: 'manage_testimonials', description: 'Allows full CRUD for testimonials.' },
+      { name: 'manage_contact_inquiries', description: 'Allows full CRUD for contact inquiries.' },
       // --- END NEW MILESTONE 7 PERMISSIONS ---
     ];
 
