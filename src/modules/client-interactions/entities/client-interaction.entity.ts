@@ -5,6 +5,7 @@ import {
     ManyToOne,
     CreateDateColumn,
     UpdateDateColumn,
+    JoinColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Lead } from '../../leads/entities/lead.entity';
@@ -42,6 +43,7 @@ export class ClientInteraction {
     interactedWithId: string;
 
     @ManyToOne(() => Lead, (lead) => lead.interactions, { nullable: true })
+    @JoinColumn({ name: 'lead_id' }) 
     interactedWithLead: Lead;
 
     @Column({ name: 'lead_id', type: 'uuid', nullable: true })
