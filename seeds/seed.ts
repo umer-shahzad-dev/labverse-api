@@ -18,7 +18,15 @@ import { Skill } from '../src/modules/skills/entities/skill.entity';
 import { ProjectMilestone } from '../src/modules/project-milestones/entities/project-milestone.entity';
 import { ProjectUpdate } from '../src/modules/project-updates/entities/project-update.entity';
 import { ProjectStatus } from '../src/modules/projects/entities/project.entity';
-import { PermissionNames } from '../src/modules/permissions/enums/permission-names.enum'; // Assuming this exists for consistency
+import { PermissionNames } from '../src/modules/permissions/enums/permission-names.enum';
+// --- NEW MILESTONE 7 ENTITY IMPORTS ---
+import { Lead } from '../src/modules/leads/entities/lead.entity';
+import { Category } from '../src/modules/categories/entities/category.entity';
+import { BlogPost } from '../src/modules/blog-posts/entities/blog-post.entity';
+import { Comment } from '../src/modules/blog-posts/entities/comment.entity';
+import { ClientNote } from '../src/modules/client-notes/entities/client-note.entity';
+import { ClientInteraction } from '../src/modules/client-interactions/entities/client-interaction.entity';
+// --- END NEW MILESTONE 7 ENTITY IMPORTS ---
 
 // Import your database config
 import databaseConfig from '../src/config/database.config';
@@ -57,6 +65,14 @@ async function seed() {
       { name: 'update_support_ticket', description: 'Allows admin/project managers to update support tickets.' },
       { name: 'add_ticket_comment', description: 'Allows a user to add a comment to a support ticket they can view.' },
       // --- END NEW SUPPORT TICKET PERMISSIONS ---
+
+      // --- NEW MILESTONE 7 PERMISSIONS ---
+      { name: 'manage_categories', description: 'Allows full CRUD for content categories.' },
+      { name: 'manage_blog_posts', description: 'Allows full CRUD for blog posts and comments.' },
+      { name: 'manage_leads', description: 'Allows full CRUD for leads in the CRM.' },
+      { name: 'manage_client_notes', description: 'Allows full CRUD for client notes in the CRM.' },
+      { name: 'manage_client_interactions', description: 'Allows full CRUD for client interactions in the CRM.' },
+      // --- END NEW MILESTONE 7 PERMISSIONS ---
     ];
 
     const seededPermissions: { [key: string]: Permission } = {};
@@ -104,7 +120,7 @@ async function seed() {
       seededPermissions['read_conversation'],
       seededPermissions['send_message'],
       seededPermissions['read_message'],
-      // --- Assign support ticket permissions to User ---
+      // --- Support ticket permissions for User ---
       seededPermissions['create_support_ticket'],
       seededPermissions['read_own_support_tickets'],
       seededPermissions['add_ticket_comment'],
@@ -133,7 +149,7 @@ async function seed() {
       seededPermissions['view_client_projects'],
       seededPermissions['view_profile'],
       seededPermissions['view_skills'],
-      // --- Assign support ticket permissions to Client ---
+      // --- Support ticket permissions for Client ---
       seededPermissions['create_support_ticket'],
       seededPermissions['read_own_support_tickets'],
       seededPermissions['add_ticket_comment'],
@@ -216,7 +232,6 @@ async function seed() {
         name: projectName,
         description: 'A project specifically for client testing.',
         status: ProjectStatus.ACTIVE,
-        startDate: new Date(),
         createdBy: adminUser,
       });
       await projectRepo.save(clientProject);

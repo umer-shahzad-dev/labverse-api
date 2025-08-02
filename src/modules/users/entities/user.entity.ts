@@ -24,6 +24,11 @@ import { ConversationParticipant } from '../../conversations/entities/conversati
 import { Message } from '../../messages/entities/message.entity';
 import { SupportTicket } from '../../support-tickets/entities/support-ticket.entity';
 import { TicketComment } from '../../support-tickets/entities/ticket-comment.entity';
+import { BlogPost } from '../../blog-posts/entities/blog-post.entity';
+import { Comment } from '../../blog-posts/entities/comment.entity';
+import { Lead } from '../../leads/entities/lead.entity';
+import { ClientNote } from '../../client-notes/entities/client-note.entity';
+import { ClientInteraction } from '../../client-interactions/entities/client-interaction.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -99,4 +104,26 @@ export class User {
 
   @OneToMany(() => TicketComment, comment => comment.author)
   ticketComments: TicketComment[];
+
+  @OneToMany(() => BlogPost, (blogPost) => blogPost.author)
+  blogPosts: BlogPost[];
+
+  @OneToMany(() => Comment, (comment) => comment.author)
+  comments: Comment[];
+
+  @OneToMany(() => Lead, (lead) => lead.assignedTo)
+  leads: Lead[];
+
+
+  @OneToMany(() => ClientNote, (note) => note.author)
+  authoredNotes: ClientNote[];
+
+  @OneToMany(() => ClientNote, (note) => note.client)
+  clientNotes: ClientNote[];
+
+  @OneToMany(() => ClientInteraction, (interaction) => interaction.loggedBy)
+  loggedInteractions: ClientInteraction[];
+
+  @OneToMany(() => ClientInteraction, (interaction) => interaction.interactedWith)
+  clientInteractions: ClientInteraction[];
 }
