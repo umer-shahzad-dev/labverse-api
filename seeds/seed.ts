@@ -27,12 +27,22 @@ import { BlogPost } from '../src/modules/blog-posts/entities/blog-post.entity';
 import { Comment } from '../src/modules/blog-posts/entities/comment.entity';
 import { ClientNote } from '../src/modules/client-notes/entities/client-note.entity';
 import { ClientInteraction } from '../src/modules/client-interactions/entities/client-interaction.entity';
-import { Question } from '../src/modules/questions/entities/question.entity'; // <-- New import
-import { Answer } from '../src/modules/answers/entities/answer.entity'; // <-- New import
-import { CaseStudy } from '../src/modules/case-studies/entities/case-study.entity'; // <-- New import
-import { Testimonial } from '../src/modules/testimonials/entities/testimonial.entity'; // <-- New import
-import { ContactInquiry } from '../src/modules/contact-inquiries/entities/contact-inquiry.entity'; // <-- New import
+import { Question } from '../src/modules/questions/entities/question.entity';
+import { Answer } from '../src/modules/answers/entities/answer.entity';
+import { CaseStudy } from '../src/modules/case-studies/entities/case-study.entity';
+import { Testimonial } from '../src/modules/testimonials/entities/testimonial.entity';
+import { ContactInquiry } from '../src/modules/contact-inquiries/entities/contact-inquiry.entity';
 // --- END NEW MILESTONE 7 ENTITY IMPORTS ---
+
+// --- NEW MILESTONE 8 ENTITY IMPORTS ---
+import { FileStorage } from '../src/modules/file-storage/entities/file-storage.entity';
+import { AuditLog } from '../src/modules/audit-logs/entities/audit-log.entity';
+import { Notification } from '../src/modules/notifications/entities/notification.entity';
+// --- END NEW MILESTONE 8 ENTITY IMPORTS ---
+
+// --- NEW MILESTONE 9 ENTITY IMPORTS ---
+import { UserPreference } from '../src/modules/user-preferences/entities/user-preference.entity';
+// --- END NEW MILESTONE 9 ENTITY IMPORTS ---
 
 // Import your database config
 import databaseConfig from '../src/config/database.config';
@@ -56,11 +66,17 @@ async function seed() {
   const skillRepo = AppDataSource.getRepository(Skill);
   const projectMilestoneRepo = AppDataSource.getRepository(ProjectMilestone);
   const projectUpdateRepo = AppDataSource.getRepository(ProjectUpdate);
+  const auditLogRepo = AppDataSource.getRepository(AuditLog);
+  const notificationRepo = AppDataSource.getRepository(Notification);
+  // --- NEW MILESTONE 9 REPOSITORIES ---
+  // Note: We don't need a UserPreference repository for seeding here,
+  // as preferences will be created on demand by the service.
+  // --- END NEW MILESTONE 9 REPOSITORIES ---
 
   try {
     // 1. Seed Permissions first
     const permissionsToSeed = [
-      ...Object.values(PermissionNames).map(name => ({
+      ...Object.values(PermissionNames).map((name) => ({
         name,
         description: `Allows ${name.replace(/_/g, ' ')}`,
       })),
@@ -84,6 +100,16 @@ async function seed() {
       { name: 'manage_testimonials', description: 'Allows full CRUD for testimonials.' },
       { name: 'manage_contact_inquiries', description: 'Allows full CRUD for contact inquiries.' },
       // --- END NEW MILESTONE 7 PERMISSIONS ---
+
+      // --- NEW MILESTONE 8 PERMISSIONS ---
+      { name: 'manage_file_storage', description: 'Allows full CRUD for file metadata.' },
+      { name: 'read_audit_logs', description: 'Allows administrators to view all system audit logs.' },
+      { name: 'manage_notifications', description: 'Allows creating and managing notifications.' },
+      // --- END NEW MILESTONE 8 PERMISSIONS ---
+
+      // --- NEW MILESTONE 9 PERMISSIONS (User Preferences) ---
+      { name: 'manage_user_preferences', description: 'Allows a user to manage their own personal preferences.' },
+      // --- END NEW MILESTONE 9 PERMISSIONS ---
     ];
 
     const seededPermissions: { [key: string]: Permission } = {};
@@ -110,8 +136,8 @@ async function seed() {
       await roleRepo.save(adminRole);
       console.log(`Role "${adminRoleData.name}" created with all permissions.`);
     } else {
-      const currentPermNames = adminRole.permissions.map(p => p.name);
-      const newPermNames = adminPermissions.map(p => p.name);
+      const currentPermNames = adminRole.permissions.map((p) => p.name);
+      const newPermNames = adminPermissions.map((p) => p.name);
       if (JSON.stringify([...currentPermNames].sort()) !== JSON.stringify([...newPermNames].sort())) {
         adminRole.permissions = adminPermissions;
         await roleRepo.save(adminRole);
@@ -127,14 +153,12 @@ async function seed() {
       seededPermissions['view_projects'],
       seededPermissions['view_profile'],
       seededPermissions['view_skills'],
-      seededPermissions['create_conversation'],
-      seededPermissions['read_conversation'],
-      seededPermissions['send_message'],
-      seededPermissions['read_message'],
       // --- Support ticket permissions for User ---
       seededPermissions['create_support_ticket'],
       seededPermissions['read_own_support_tickets'],
       seededPermissions['add_ticket_comment'],
+      // --- User Preferences permission ---
+      seededPermissions['manage_user_preferences'],
     ].filter(Boolean);
 
     let userRole = await roleRepo.findOne({ where: { name: userRoleData.name }, relations: ['permissions'] });
@@ -143,8 +167,8 @@ async function seed() {
       await roleRepo.save(userRole);
       console.log(`Role "${userRoleData.name}" created with limited permissions.`);
     } else {
-      const currentUserPermNames = userRole.permissions.map(p => p.name);
-      const newUserPermNames = userRolePermissions.map(p => p.name);
+      const currentUserPermNames = userRole.permissions.map((p) => p.name);
+      const newUserPermNames = userRolePermissions.map((p) => p.name);
       if (JSON.stringify([...currentUserPermNames].sort()) !== JSON.stringify([...newUserPermNames].sort())) {
         userRole.permissions = userRolePermissions;
         await roleRepo.save(userRole);
@@ -164,6 +188,8 @@ async function seed() {
       seededPermissions['create_support_ticket'],
       seededPermissions['read_own_support_tickets'],
       seededPermissions['add_ticket_comment'],
+      // --- User Preferences permission ---
+      seededPermissions['manage_user_preferences'],
     ].filter(Boolean);
 
     let clientRole = await roleRepo.findOne({ where: { name: clientRoleData.name }, relations: ['permissions'] });
@@ -172,8 +198,8 @@ async function seed() {
       await roleRepo.save(clientRole);
       console.log(`Role "${clientRoleData.name}" created with client-specific permissions.`);
     } else {
-      const currentClientPermNames = clientRole.permissions.map(p => p.name);
-      const newClientPermNames = clientRolePermissions.map(p => p.name);
+      const currentClientPermNames = clientRole.permissions.map((p) => p.name);
+      const newClientPermNames = clientRolePermissions.map((p) => p.name);
       if (JSON.stringify([...currentClientPermNames].sort()) !== JSON.stringify([...newClientPermNames].sort())) {
         clientRole.permissions = clientRolePermissions;
         await roleRepo.save(clientRole);
@@ -270,7 +296,6 @@ async function seed() {
     }
 
     console.log('Database seeding completed.');
-
   } catch (e) {
     console.error('Seeding error:', e);
     process.exit(1);

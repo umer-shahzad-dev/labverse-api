@@ -36,6 +36,10 @@ import { AnswersModule } from './modules/answers/answers.module';
 import { CaseStudiesModule } from './modules/case-studies/case-studies.module';
 import { TestimonialsModule } from './modules/testimonials/testimonials.module';
 import { ContactInquiriesModule } from './modules/contact-inquiries/contact-inquiries.module';
+import { FileStorageModule } from './modules/file-storage/file-storage.module';
+import { AuditLogsModule } from './modules/audit-logs/audit-logs.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { UserPreferencesModule } from './modules/user-preferences/user-preferences.module';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -87,6 +91,10 @@ import { Lead } from './modules/leads/entities/lead.entity';
     CaseStudiesModule,
     TestimonialsModule,
     ContactInquiriesModule,
+    FileStorageModule, 
+    AuditLogsModule,
+    NotificationsModule, 
+    UserPreferencesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -5,6 +5,8 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Role } from '../roles/entities/role.entity';
+import { AuditLogsService } from '../audit-logs/audit-logs.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class UsersService {
@@ -13,9 +15,15 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Role)
     private readonly roleRepository: Repository<Role>,
-  ) {}
+    private readonly auditLogsService: AuditLogsService,
+    private readonly notificationsService: NotificationsService,
+  ) { }
 
-  async create(dto: CreateUserDto): Promise<User> {
+  /**
+   * Creates a new user, optionally specifying the creator for audit logging.
+   * The 'creator' parameter is optional to support both admin-created users and self-registered users.
+   */
+  async create(dto: CreateUserDto, creator?: User): Promise<User> {
     let role: Role | undefined;
     if (dto.roleId) {
       role = await this.roleRepository.findOne({ where: { id: dto.roleId } });
@@ -24,11 +32,35 @@ export class UsersService {
       ...dto,
       role,
     });
-    return this.userRepository.save(user);
+    const savedUser = await this.userRepository.save(user);
+
+    // Create an audit log for the user creation, passing the creator if available.
+    // This now runs for both admin-created and self-registered users.
+    await this.auditLogsService.create(
+      {
+        action: 'user.create',
+        entityName: 'User',
+        entityId: savedUser.id,
+        details: { email: savedUser.email },
+      },
+      creator,
+    );
+
+    // Create a notification for the admin user
+    const adminUser = await this.userRepository.findOne({
+      where: { email: 'admin@labverse.com' },
+    });
+    if (adminUser) {
+      await this.notificationsService.create({
+        userId: adminUser.id,
+        message: `A new user with email "${savedUser.email}" has registered.`,
+      });
+    }
+
+    return savedUser;
   }
 
   async findAll(): Promise<User[]> {
-    // We should load permissions here as well for consistency
     return this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.role', 'role')
@@ -67,7 +99,6 @@ export class UsersService {
     await this.userRepository.delete(id);
   }
 
-  // 👇 CORRECTED METHOD
   async findByEmail(
     email: string,
     opts: { includePassword?: boolean; includeRoleAndPermissions?: boolean } = {},

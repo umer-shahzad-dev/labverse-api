@@ -1,18 +1,20 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common'; // 👈 Add ConflictException
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Project } from './entities/project.entity';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { User } from '../users/entities/user.entity';
+import { NotificationsService } from '../notifications/notifications.service'; // <-- New Import
 
 @Injectable()
 export class ProjectsService {
     constructor(
         @InjectRepository(Project)
-        private readonly projectRepository: Repository<Project>, // Renamed for consistency
+        private readonly projectRepository: Repository<Project>,
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
+        private readonly notificationsService: NotificationsService, // <-- Inject the service
     ) { }
 
     async create(createProjectDto: CreateProjectDto): Promise<Project> {
@@ -25,7 +27,6 @@ export class ProjectsService {
         }
 
         let createdBy: User;
-        // Use createProjectDto.createdById as per our DTOs
         if (createProjectDto.createdById) {
             createdBy = await this.userRepository.findOne({ where: { id: createProjectDto.createdById } });
             if (!createdBy) {
@@ -36,21 +37,30 @@ export class ProjectsService {
         const project = this.projectRepository.create({
             ...createProjectDto,
             createdBy,
-            // Ensure date handling for nulls is consistent if the DTO allows null
             startDate: createProjectDto.startDate ? new Date(createProjectDto.startDate) : null,
             endDate: createProjectDto.endDate ? new Date(createProjectDto.endDate) : null,
         });
-        return this.projectRepository.save(project);
+        const savedProject = await this.projectRepository.save(project);
+
+        // Create a notification for the project creator
+        if (createdBy) {
+            await this.notificationsService.create({
+                userId: createdBy.id,
+                message: `Project "${savedProject.name}" has been created.`,
+            });
+        }
+
+        return savedProject;
     }
 
     async findAll(): Promise<Project[]> {
         return this.projectRepository.find({
             relations: [
-                'createdBy',         // Include the user who created the project
-                'members',           // Include project members (ProjectMember entity)
-                'members.user',      // Include user details within each ProjectMember
-                'technologies',      // Include project technologies (ProjectTechnology entity)
-                'technologies.technology', // Include technology details within each ProjectTechnology
+                'createdBy',
+                'members',
+                'members.user',
+                'technologies',
+                'technologies.technology',
             ],
         });
     }
@@ -73,9 +83,9 @@ export class ProjectsService {
     }
 
     async update(id: string, updateProjectDto: UpdateProjectDto): Promise<Project> {
-        const project = await this.findOne(id); // Ensures the project exists and loads relations
+        const project = await this.findOne(id);
 
-        // Check for duplicate name during update, excluding the current project itself
+        // Check for duplicate name during update
         if (updateProjectDto.name && updateProjectDto.name !== project.name) {
             const existingProject = await this.projectRepository.findOne({
                 where: { name: updateProjectDto.name },
@@ -85,21 +95,16 @@ export class ProjectsService {
             }
         }
 
-        // Update createdBy if provided (optional)
-        // Use updateProjectDto.createdById as per our DTOs
+        let newCreator: User = project.createdBy;
         if (updateProjectDto.createdById) {
-            const newCreator = await this.userRepository.findOne({ where: { id: updateProjectDto.createdById } });
+            newCreator = await this.userRepository.findOne({ where: { id: updateProjectDto.createdById } });
             if (!newCreator) {
                 throw new NotFoundException(`User with ID "${updateProjectDto.createdById}" not found.`);
             }
-            project.createdBy = newCreator;
         } else if (updateProjectDto.createdById === null) {
-            // If createdById is explicitly null, set createdBy to null
-            project.createdBy = null;
+            newCreator = null;
         }
 
-
-        // Convert and assign date strings to Date objects if they exist in the DTO
         if (updateProjectDto.startDate !== undefined) {
             project.startDate = updateProjectDto.startDate ? new Date(updateProjectDto.startDate) : null;
         }
@@ -107,19 +112,36 @@ export class ProjectsService {
             project.endDate = updateProjectDto.endDate ? new Date(updateProjectDto.endDate) : null;
         }
 
-        // Destructure DTO to exclude relations or IDs handled separately
         const { createdById, startDate, endDate, ...projectData } = updateProjectDto;
+        Object.assign(project, { ...projectData, createdBy: newCreator });
 
-        // Assign other properties
-        Object.assign(project, projectData);
+        const updatedProject = await this.projectRepository.save(project);
 
-        return this.projectRepository.save(project);
+        // Create a notification for the project creator
+        if (updatedProject.createdBy) {
+            await this.notificationsService.create({
+                userId: updatedProject.createdBy.id,
+                message: `Project "${updatedProject.name}" has been updated.`,
+            });
+        }
+
+        return updatedProject;
     }
 
     async remove(id: string): Promise<void> {
+        const projectToRemove = await this.findOne(id); // Find the project to get its creator
         const result = await this.projectRepository.delete(id);
+
         if (result.affected === 0) {
             throw new NotFoundException(`Project with ID "${id}" not found.`);
+        }
+
+        // Create a notification for the project creator after deletion
+        if (projectToRemove.createdBy) {
+            await this.notificationsService.create({
+                userId: projectToRemove.createdBy.id,
+                message: `Project "${projectToRemove.name}" has been deleted.`,
+            });
         }
     }
 }

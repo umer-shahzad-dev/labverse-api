@@ -33,6 +33,10 @@ import { Question } from '../../questions/entities/question.entity';
 import { Answer } from '../../answers/entities/answer.entity';
 import { CaseStudy } from '../../case-studies/entities/case-study.entity';
 import { Testimonial } from '../../testimonials/entities/testimonial.entity';
+import { UserPreference } from '../../user-preferences/entities/user-preference.entity';
+import { FileStorage } from '../../file-storage/entities/file-storage.entity';
+import { AuditLog } from '../../audit-logs/entities/audit-log.entity';
+import { Notification } from '../../notifications/entities/notification.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -71,13 +75,13 @@ export class User {
   projectUpdates: ProjectUpdate[];
 
   @OneToMany(() => Task, (task) => task.assignedTo)
-  assignedTasks: Task[]; // Now correctly typed
+  assignedTasks: Task[];
 
   @OneToMany(() => Task, (task) => task.createdBy)
-  createdTasks: Task[]; // Now correctly typed
+  createdTasks: Task[];
 
   @OneToMany(() => TaskComment, (taskComment) => taskComment.author)
-  taskComments: TaskComment[]; // Now correctly typed
+  taskComments: TaskComment[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
@@ -100,13 +104,13 @@ export class User {
   @OneToMany(() => Message, (message) => message.sender)
   messages: Message[];
 
-  @OneToMany(() => SupportTicket, ticket => ticket.reporter)
+  @OneToMany(() => SupportTicket, (ticket) => ticket.reporter)
   reportedTickets: SupportTicket[];
 
-  @OneToMany(() => SupportTicket, ticket => ticket.assignedTo)
+  @OneToMany(() => SupportTicket, (ticket) => ticket.assignedTo)
   assignedTickets: SupportTicket[];
 
-  @OneToMany(() => TicketComment, comment => comment.author)
+  @OneToMany(() => TicketComment, (comment) => comment.author)
   ticketComments: TicketComment[];
 
   @OneToMany(() => BlogPost, (blogPost) => blogPost.author)
@@ -117,7 +121,6 @@ export class User {
 
   @OneToMany(() => Lead, (lead) => lead.assignedTo)
   leads: Lead[];
-
 
   @OneToMany(() => ClientNote, (note) => note.author)
   authoredNotes: ClientNote[];
@@ -142,4 +145,18 @@ export class User {
 
   @OneToMany(() => Testimonial, (testimonial) => testimonial.createdBy)
   testimonials: Testimonial[];
+
+  @OneToMany(() => FileStorage, (fileStorage) => fileStorage.uploadedBy)
+  files: FileStorage[];
+
+  @OneToMany(() => AuditLog, (auditLog) => auditLog.user)
+  auditLogs: AuditLog[];
+
+  @OneToMany(() => Notification, (notification) => notification.user)
+  notifications: Notification[];
+
+  @OneToOne(() => UserPreference, (userPreference) => userPreference.user)
+  @JoinColumn({ name: 'user_preference_id' })
+  userPreference: UserPreference;
+
 }
