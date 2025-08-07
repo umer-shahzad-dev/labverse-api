@@ -19,8 +19,6 @@ import { ProjectMilestone } from '../src/modules/project-milestones/entities/pro
 import { ProjectUpdate } from '../src/modules/project-updates/entities/project-update.entity';
 import { ProjectStatus } from '../src/modules/projects/entities/project.entity';
 import { PermissionNames } from '../src/modules/permissions/enums/permission-names.enum';
-
-// --- NEW MILESTONE 7 ENTITY IMPORTS ---
 import { Lead } from '../src/modules/leads/entities/lead.entity';
 import { Category } from '../src/modules/categories/entities/category.entity';
 import { BlogPost } from '../src/modules/blog-posts/entities/blog-post.entity';
@@ -32,19 +30,10 @@ import { Answer } from '../src/modules/answers/entities/answer.entity';
 import { CaseStudy } from '../src/modules/case-studies/entities/case-study.entity';
 import { Testimonial } from '../src/modules/testimonials/entities/testimonial.entity';
 import { ContactInquiry } from '../src/modules/contact-inquiries/entities/contact-inquiry.entity';
-// --- END NEW MILESTONE 7 ENTITY IMPORTS ---
-
-// --- NEW MILESTONE 8 ENTITY IMPORTS ---
 import { FileStorage } from '../src/modules/file-storage/entities/file-storage.entity';
 import { AuditLog } from '../src/modules/audit-logs/entities/audit-log.entity';
 import { Notification } from '../src/modules/notifications/entities/notification.entity';
-// --- END NEW MILESTONE 8 ENTITY IMPORTS ---
-
-// --- NEW MILESTONE 9 ENTITY IMPORTS ---
 import { UserPreference } from '../src/modules/user-preferences/entities/user-preference.entity';
-// --- END NEW MILESTONE 9 ENTITY IMPORTS ---
-
-// Import your database config
 import databaseConfig from '../src/config/database.config';
 
 dotenv.config();
@@ -68,10 +57,6 @@ async function seed() {
   const projectUpdateRepo = AppDataSource.getRepository(ProjectUpdate);
   const auditLogRepo = AppDataSource.getRepository(AuditLog);
   const notificationRepo = AppDataSource.getRepository(Notification);
-  // --- NEW MILESTONE 9 REPOSITORIES ---
-  // Note: We don't need a UserPreference repository for seeding here,
-  // as preferences will be created on demand by the service.
-  // --- END NEW MILESTONE 9 REPOSITORIES ---
 
   try {
     // 1. Seed Permissions first
@@ -80,15 +65,87 @@ async function seed() {
         name,
         description: `Allows ${name.replace(/_/g, ' ')}`,
       })),
-      // --- NEW SUPPORT TICKET PERMISSIONS ---
+
+      { name: 'manage_users', description: 'Allows management of all user accounts.' },
+      { name: 'create_projects', description: 'Allows creation of new projects.' },
+      { name: 'view_projects', description: 'Allows viewing of all projects.' },
+      { name: 'manage_roles', description: 'Allows creation and modification of roles.' },
+      { name: 'manage_permissions', description: 'Allows management of system permissions.' },
+      { name: 'manage_skills', description: 'Allows management of skills.' },
+      { name: 'manage_employee_profiles', description: 'Allows management of employee profiles.' },
+      { name: 'manage_projects', description: 'Allows full CRUD for projects.' },
+      { name: 'manage_project_members', description: 'Allows management of project member assignments and roles.' },
+      { name: 'manage_technologies', description: 'Allows full CRUD for technologies.' },
+      { name: 'manage_project_technologies', description: 'Allows management of technologies assigned to projects.' },
+      { name: 'manage_project_clients', description: 'Allows management of clients assigned to projects.' },
+      { name: 'manage_project_milestones', description: 'Allows management of project milestones.' },
+      { name: 'manage_project_updates', description: 'Allows management of project updates.' },
+      { name: 'view_client_projects', description: 'Allows a client to view their assigned projects and related progress.' }, 
+      { name: 'view_profile', description: 'Allows a user to view their own profile.' },
+      { name: 'view_skills', description: 'Allows a user to view skills.' },
+      { name: 'create_task', description: 'Allows creating new tasks' },
+      { name: 'read_task', description: 'Allows viewing tasks' },
+      { name: 'update_task', description: 'Allows updating task details (name, description, due date, project, milestone)' },
+      { name: 'delete_task', description: 'Allows deleting tasks' },
+      { name: 'assign_task', description: 'Allows assigning tasks to users' },
+      { name: 'update_task_status', description: 'Allows updating task status' },
+      { name: 'update_task_priority', description: 'Allows updating task priority' },
+      { name: 'create_task_comment', description: 'Allows adding comments to tasks' },
+      { name: 'read_task_comment', description: 'Allows viewing task comments' },
+      { name: 'update_task_comment', description: 'Allows updating own task comments' },
+      { name: 'delete_task_comment', description: 'Allows deleting own task comments' },
+      { name: 'create_time_entry', description: 'Allows creating time entries' },
+      { name: 'read_time_entry', description: 'Allows reading time entries' },
+      { name: 'update_time_entry', description: 'Allows updating time entries' },
+      { name: 'delete_time_entry', description: 'Allows deleting time entries' },
+      { name: 'read_time_entry_report', description: 'Allows reading time reports' },
+      { name: 'create_service', description: 'Allows creating new services' },
+      { name: 'read_service', description: 'Allows reading service details' },
+      { name: 'update_service', description: 'Allows updating existing services' },
+      { name: 'delete_service', description: 'Allows deleting services' },
+      { name: 'create_development_plan', description: 'Allows creating new development plans' },
+      { name: 'read_development_plan', description: 'Allows reading development plan details' },
+      { name: 'update_development_plan', description: 'Allows updating existing development plans' },
+      { name: 'delete_development_plan', description: 'Allows deleting development plans' },
+      { name: 'create_plan_feature', description: 'Allows creating new plan features' },
+      { name: 'read_plan_feature', description: 'Allows reading plan feature details' },
+      { name: 'update_plan_feature', description: 'Allows updating existing plan features' },
+      { name: 'delete_plan_feature', description: 'Allows deleting plan features' },
+      { name: 'create_development_plan_feature', description: 'Allows associating features with development plans' },
+      { name: 'read_development_plan_feature', description: 'Allows reading development plan feature associations' },
+      { name: 'update_development_plan_feature', description: 'Allows updating development plan feature associations' },
+      { name: 'delete_development_plan_feature', description: 'Allows deleting development plan feature associations' },
+      { name: 'create_development_plan_service', description: 'Allows associating services with development plans' },
+      { name: 'read_development_plan_service', description: 'Allows reading development plan service associations' },
+      { name: 'update_development_plan_service', description: 'Allows updating development plan service associations' },
+      { name: 'delete_development_plan_service', description: 'Allows deleting development plan service associations' },
+      { name: 'create_development_plan_technology', description: 'Allows associating technologies with development plans' },
+      { name: 'read_development_plan_technology', description: 'Allows reading development plan technology associations' },
+      { name: 'update_development_plan_technology', description: 'Allows updating development plan technology associations' },
+      { name: 'delete_development_plan_technology', description: 'Allows deleting development plan technology associations' },
+      { name: 'create_client_plan_quotation', description: 'Allows creating new client plan quotations' },
+      { name: 'read_client_plan_quotation', description: 'Allows reading client plan quotation details' },
+      { name: 'update_client_plan_quotation', description: 'Allows updating existing client plan quotations' },
+      { name: 'delete_client_plan_quotation', description: 'Allows deleting client plan quotations' },
+      { name: 'update_client_plan_quotation_status', description: 'Allows updating the status of client plan quotations' },
+      { name: 'create_invoice', description: 'Allows creating new invoices' },
+      { name: 'read_invoice', description: 'Allows reading invoice details' },
+      { name: 'update_invoice', description: 'Allows updating existing invoices (including items)' },
+      { name: 'delete_invoice', description: 'Allows deleting invoices' },
+      { name: 'update_invoice_payment_status', description: 'Allows updating the payment status of invoices' },
+      { name: 'create_payment', description: 'Allows creating new payments' },
+      { name: 'read_payment', description: 'Allows reading payment details' },
+      { name: 'update_payment', description: 'Allows updating existing payments' },
+      { name: 'delete_payment', description: 'Allows deleting payments' },
+      { name: 'create_conversation', description: 'Allows creating new conversations' },
+      { name: 'read_conversation', description: 'Allows viewing conversations and participants' },
+      { name: 'send_message', description: 'Allows sending messages within a conversation' },
+      { name: 'read_message', description: 'Allows viewing messages in a conversation' },
       { name: 'create_support_ticket', description: 'Allows users to create new support tickets.' },
       { name: 'read_own_support_tickets', description: 'Allows a user to read their own support tickets.' },
       { name: 'read_all_support_tickets', description: 'Allows admin/project managers to read all support tickets.' },
       { name: 'update_support_ticket', description: 'Allows admin/project managers to update support tickets.' },
       { name: 'add_ticket_comment', description: 'Allows a user to add a comment to a support ticket they can view.' },
-      // --- END NEW SUPPORT TICKET PERMISSIONS ---
-
-      // --- NEW MILESTONE 7 PERMISSIONS ---
       { name: 'manage_categories', description: 'Allows full CRUD for content categories.' },
       { name: 'manage_blog_posts', description: 'Allows full CRUD for blog posts and comments.' },
       { name: 'manage_leads', description: 'Allows full CRUD for leads in the CRM.' },
@@ -99,17 +156,10 @@ async function seed() {
       { name: 'manage_case_studies', description: 'Allows full CRUD for case studies.' },
       { name: 'manage_testimonials', description: 'Allows full CRUD for testimonials.' },
       { name: 'manage_contact_inquiries', description: 'Allows full CRUD for contact inquiries.' },
-      // --- END NEW MILESTONE 7 PERMISSIONS ---
-
-      // --- NEW MILESTONE 8 PERMISSIONS ---
       { name: 'manage_file_storage', description: 'Allows full CRUD for file metadata.' },
       { name: 'read_audit_logs', description: 'Allows administrators to view all system audit logs.' },
       { name: 'manage_notifications', description: 'Allows creating and managing notifications.' },
-      // --- END NEW MILESTONE 8 PERMISSIONS ---
-
-      // --- NEW MILESTONE 9 PERMISSIONS (User Preferences) ---
       { name: 'manage_user_preferences', description: 'Allows a user to manage their own personal preferences.' },
-      // --- END NEW MILESTONE 9 PERMISSIONS ---
     ];
 
     const seededPermissions: { [key: string]: Permission } = {};
@@ -188,7 +238,6 @@ async function seed() {
       seededPermissions['create_support_ticket'],
       seededPermissions['read_own_support_tickets'],
       seededPermissions['add_ticket_comment'],
-      // --- User Preferences permission ---
       seededPermissions['manage_user_preferences'],
     ].filter(Boolean);
 
